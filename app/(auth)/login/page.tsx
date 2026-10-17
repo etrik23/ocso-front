@@ -1,21 +1,32 @@
 'use client';
 import { API_URL } from "@/constaants";
-import { Button, Input, Link } from "@nextui-org/react";
+import { Button, Input, Link, Spinner } from "@nextui-org/react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginPage() {
+    const [submitting, setSubmitting] = useState(false)
+    const router = useRouter()
     const handleSubmit = async (e: React.FormEvent) => {
+        setSubmitting(true);
         e.preventDefault()
         const formData = new FormData(e.target);
         let authData: any = {}
         authData.userEmail = formData.get("userEmail");
         authData.userPassword = formData.get("userPassword");
-        const { data } = await axios.post(`${API_URL}/auth/login`, {
-            ... authData
-        }, {
-            withCredentials: true,
-        });
-        console.log(data);
+        try {
+            const response = await axios.post(`${API_URL}/auth/login`, {
+                ...authData
+            }, {
+                withCredentials: true,
+            });
+            if (response.status === 201) router.push('/dashboard');
+            setSubmitting(false)
+        } catch (e) {
+            setSubmitting(false);
+        }
+
         return;
     }
     return (
@@ -24,11 +35,16 @@ export default function LoginPage() {
             <div className="flex flex-col gap-2 my-4 items-center">
                 <Input label="Email" name="userEmail" type="email" isRequired={true} size="sm" />
                 <Input label="Contrasenia" name="userPassword" type="password" isRequired={true} size="sm" />
-                
+
             </div>
 
             <div className="flex flex-col items-center gap-2">
-                <Button color="primary" type="submit">Iniciar sesion</Button>
+                <Button
+                    color="primary"
+                    type="submit"
+                    disabled={submitting}>
+                    {submitting ? "Enviando..." : "Iniciar Sesion"}
+                </Button>
                 <p className="text-white">No tienes una cuenta? <Link href="/singup" className="text-red-600 underline">Registrarse</Link></p>
             </div>
         </form>
