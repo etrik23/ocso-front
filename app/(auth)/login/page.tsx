@@ -1,5 +1,5 @@
 'use client';
-import { API_URL } from "@/constaants";
+import { API_URL } from "@/constants";
 import { Button, Input, Link, Spinner } from "@nextui-org/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
