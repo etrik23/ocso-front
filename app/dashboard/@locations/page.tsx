@@ -5,32 +5,18 @@ import { cookies, headers } from 'next/headers';
 import SelectLocation from "./_components/SelectLocation";
 import LocationCard from "./_components/LocationCard";
 import FormNewLocation from "./_components/FormNewLocation";
+import DeleteLocationButton from "./_components/DeleteLocationButton";
+import { authHeaders } from "@/helpers/authHeaders";
 
 const LocationsPage = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
-    const userCookies = cookies()
-    const token = userCookies.get(TOKEN_NAME)?.value
-    let data: Location[] = [];
-    try {
-        const response = await axios.get<Location[]>(`${API_URL}/locations`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        data = response.data;
-    } catch (error) {
-        // Si el token falló por un cambio en el backend, puedes manejar la redirección o dejar los datos vacíos temporalmente
-        console.error("Token inválido o expirado, por favor vuelve a iniciar sesión");
-    }
-
-
-    /*
-    Codigo anterior
     let { data } = await axios.get<Location[]>(
         `${API_URL}/locations`, 
         {
         headers: {
-            Authorization: `Bearer ${token}`
+            ...authHeaders()
         }
     })
-    */
+
 
     data = [
         {
@@ -51,7 +37,10 @@ const LocationsPage = async ({ searchParams }: { searchParams: { [key: string]: 
                 <div className="w-8/12">
                     <LocationCard store={searchParams.store} />
                 </div>
-                <FormNewLocation />
+                <div className="w-6/12">
+                    <FormNewLocation store={searchParams.store}/>
+                </div>
+                <DeleteLocationButton store={searchParams.store} />
             </div>
         </div>
     );
