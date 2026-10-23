@@ -1,23 +1,26 @@
 import { API_URL, TOKEN_NAME } from "@/constants";
 import { Location } from "@/entities";
-import axios from "axios";
-import { cookies, headers } from 'next/headers';
 import SelectLocation from "./_components/SelectLocation";
 import LocationCard from "./_components/LocationCard";
 import FormNewLocation from "./_components/FormNewLocation";
 import DeleteLocationButton from "./_components/DeleteLocationButton";
 import { authHeaders } from "@/helpers/authHeaders";
+import UpdateLocation from "./_components/UpdateLocation";
+import FormUpdateLocation from "./_components/FormUpdateLocation";
 
 const LocationsPage = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
-    let { data } = await axios.get<Location[]>(
+    const response = await fetch(
         `${API_URL}/locations`, 
         {
         headers: {
             ...authHeaders()
+        },
+        next: {
+            tags: ["dashboard:locations"]
         }
-    })
+    });
 
-
+    let data: Location[] = await response.json()
     data = [
         {
             locationId: 0,
@@ -41,6 +44,10 @@ const LocationsPage = async ({ searchParams }: { searchParams: { [key: string]: 
                     <FormNewLocation store={searchParams.store}/>
                 </div>
                 <DeleteLocationButton store={searchParams.store} />
+
+                <UpdateLocation>
+                    <FormUpdateLocation store={searchParams.store}/>
+                </UpdateLocation>
             </div>
         </div>
     );

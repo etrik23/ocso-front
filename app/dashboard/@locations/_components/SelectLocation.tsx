@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 
 export default function SelectLocation({ locations, store }: { locations: Location[], store: string | string[] | undefined }) {
     const router = useRouter();
+    const selectedStore = Array.isArray(store) ? store[0] : store;
     return (
         <Select placeholder="Selecciona una tienda"
         label="Tienda"
         classNames={{
             mainWrapper: "hover:ring-2 ring-red-300 rounded-xl transition-all",
         }}
-        selectedKeys={store ? store : "0"}
+        selectedKeys={new Set([selectedStore ?? "0"])}
         onChange={((e) => {
             if (e.target.value === "0" || e.target.value === "") {
                 router.push(`/dashboard`)
@@ -22,7 +23,7 @@ export default function SelectLocation({ locations, store }: { locations: Locati
         >
             {
                 locations.map((location: Location) => {
-                    return <SelectItem key={location.locationId} value={location.locationId}>
+                    return <SelectItem key={String(location.locationId)}>
                         {location.locationName}
                     </SelectItem>;
                 })
